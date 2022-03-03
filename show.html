@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>showZoom</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background-repeat:no-repeat;
+				background-size: 100% 100%;
+				overflow: hidden;
+				background-position: center; 
+				background-image: url(img/bg3.png);
+			
+			}
+			#back{
+				background-image: url(img/back.png);
+				width: 50px;
+				height: 50px;
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				position: absolute;
+				left: 24%;
+				top: 24%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="back">
+			
+		</div>
+		<canvas id="cc"></canvas>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/Factory/js/jquery-1.9.0.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/build/three.min.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/tween.min.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/dat.gui.min.js"></script>
+		<!--<script src="js/EquirectangularToCubeGenerator.js"></script>-->
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/GLTFLoader.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/OrbitControls.js"></script>
+		<script src="./libs/show.js"></script>
+		
+	</body>
+
+</html>

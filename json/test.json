@@ -1,0 +1,12 @@
+{
+	"data1":[
+	{"name":"单相电能表","type":"","range":"个","number":"1","other":""},
+	{"name":"塑料卡管","type":"Φ25 ","range":"个","number":"5","other":""},
+	{"name":"PVC管","type":"Φ25 ","range":"米","number":"5","other":""},
+	{"name":"PVC管弯头","type":"Φ25 ","range":"个","number":"6","other":""},
+	{"name":"小型空气开关","type":"80A/2P","range":"个","number":"1","other":""},
+	{"name":"聚氯乙烯护套电线","type":"BLVV-16m㎡","range":"个","number":"8","other":""},
+	{"name":"固定螺栓","type":"","固定螺栓":"个","number":"10","range":"个","other":""},
+	{"name":"M垫铁","type":"MD-150","range":"块","number":"10","other":""}
+	]
+}

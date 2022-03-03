@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>animate</title>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/Factory/js/jquery-1.9.0.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/build/three.min.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/tween.min.js"></script>
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/dat.gui.min.js"></script>
+		<!--<script src="js/EquirectangularToCubeGenerator.js"></script>-->
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/GLTFLoader.js"></script>
+	<!-- 	<script src="./libs/FBXLoader.js"></script>
+		<script src="./libs/inflate.min.js"></script> -->
+		<script src="https://showjsonme.oss-cn-beijing.aliyuncs.com/libs/js/OrbitControls.js"></script>
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background-repeat:no-repeat;
+				background-size: 75% 75%;
+				overflow: hidden;
+				background-position: center; 
+				
+		
+			}
+			#back{
+				background-image: url(img/start.png);
+				width: 60px;
+				height: 72px;
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				position: absolute;
+				left: 45%;
+				top: 3%;
+			}
+			#play{
+				background-image: url(img/rest.png);
+				width: 60px;
+				height: 72px;
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				position: absolute;
+				left: 52%;
+				top: 3%;
+			}
+			#txt{
+				background-image: url(img/rest.png);
+				width: 300px;
+				height: 123px;
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				position: absolute;
+				left: 3%;
+				top: 5%;
+				background-image: url(./img/bgTxt.png);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="play">
+			
+		</div>
+		<div id="back">
+			
+		</div>
+		<div id="txt">
+			
+		</div>
+		<script>
+			$("#play").click(()=>{
+				if(actions.animation_0.time==0){
+					actions.animation_0.reset().play()
+					findMesh('polySurface2486').visible = false
+					findMesh('pPlane13').visible = false
+				}
+			})
+			$("#back").click(()=>{
+				actions.animation_0.time = 0
+				
+				cirlcesArr.map((f)=>{
+					f.visible = false
+				})
+				findMesh('polySurface2486').visible = true
+				findMesh('pPlane13').visible = true
+			})
+			$("#play").trriger
+			var container, stats, clock, gui, mixer, actions, dlight,activeAction, previousAction,controls;
+			var camera, scene, renderer, model, face;
+			var  times = {
+				start:0,
+				end:0
+			}
+			
+			var api = { state: 'Walking' };
+			let Bplace = [];
+			var tipsArray = [];
+			let cirlcesArr = [];
+			init();
+			animate();
+			
+			function init() {
+			
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+			
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 100 );
+				camera.position.set(-0.6897052589952309, 7.198101479450377,-18.26446338512683 );
+				camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+			
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xe0e0e0 );
+				// scene.fog = new THREE.Fog( 0xe0e0e0, 20, 100 );
+			
+				clock = new THREE.Clock();
+				
+				controls = new THREE.OrbitControls(camera); //添加控制器
+				controls.target.set(0, 0, 0);
+				// lights
+			
+				
+				
+				light = new THREE.HemisphereLight(0xffffff, 0x444444); //半球光源，颜色从天空颜色渐变为地面颜色。
+				light.position.set(0, 200, 0);
+				scene.add(light); //
+				
+				 dlight = new THREE.DirectionalLight( 0xffffff ,1.5);
+				dlight.position.set( 0, 10, 5 );
+				scene.add( dlight );
+				const helper = new THREE.DirectionalLightHelper( dlight, 5 );
+				// scene.add( helper );
+				var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+				pointLight.position.set( 0, -5, 0 );
+				scene.add( light );
+				const sphereSize = 1;
+				const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
+				// scene.add( pointLightHelper )
+			
+				scene.visible =  false
+			
+				// model
+				let fs = 1;
+				var loader = new THREE.GLTFLoader();
+				// var FBXloader = new THREE.FBXLoader();
+				loader.load( 'https://showjsonme.oss-cn-beijing.aliyuncs.com/Factory/model/kt6.gltf', function ( gltf ) {
+				 // loader.load( './model/model/kt6.gltf', function ( gltf ) {
+			
+					model = gltf.scene;
+					scene.add( model );
+					// model.position.y-=4
+					console.log(model)
+					createGUI( model, gltf.animations );
+					
+					mixer.addEventListener( 'finished', function( e ) { 
+						if(fs){
+							setTimeout(()=>{
+								actions.animation_0.time = 0
+								fs = 0
+								scene.visible = true
+							},1)
+							
+						}else{
+							cirlcesArr.map((f)=>{
+								f.visible = true
+							})
+						}
+						
+						
+					} );
+					
+					let spMat = new THREE.SpriteMaterial({
+						color:0xffffff,
+						map:new THREE.TextureLoader().load('./img/circle.png'),
+						transparent:true,
+						depthTest:true
+			
+					})
+					
+					function newMat (name) {
+						let tipsMat =new THREE.SpriteMaterial({
+							color:0xffffff,
+							map:new THREE.TextureLoader().load('./img/tips/' + name + '.png' ),
+							transparent:true,
+							depthTest:false
+									
+						})
+						return  tipsMat;
+					}
+					
+					scene.traverse((s)=>{
+						if(['a','b','c','d','e','f','g'].includes(s.name)){
+							
+							let sprite = new THREE.Sprite(spMat);
+							sprite.scale.set(.15,.15,1);
+							sprite.name = 'sprite_'+s.name;
+							
+							
+							let spriteTips = new THREE.Sprite(newMat(s.name))
+							spriteTips.scale.set(3.6,1.8,1);
+							tipsArray.push(spriteTips)
+							spriteTips.visible = false;
+							// if(!sprite.name.includes('door')){
+							// 	spriteArr.push(sprite)
+							// }
+							sprite.anType = s.name;
+							Bplace.push(sprite);
+							
+							// 把对象放到坐标原点
+							sprite.position.copy(s.position)
+							spriteTips.position.copy(s.position)
+							
+							spriteTips.position.y += 1.5
+							sprite.position.y += 0.15
+							spriteTips.position.x -= 1
+							sprite.visible = false
+							cirlcesArr.push(sprite)
+							scene.add(sprite)
+							scene.add(spriteTips)
+							s.visible = false
+							console.log(s.position)
+						}
+					})
+					
+					actions.animation_0.reset().play()
+			
+				}, undefined, function ( e ) {
+			
+					console.error( e );
+			
+				} );
+				
+				
+			
+			
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				container.appendChild( renderer.domElement );
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true
+				renderer.toneMappingExposure = 2
+				renderer.toneMapping = THREE.LinearToneMapping;
+			
+				window.addEventListener( 'resize', onWindowResize, false );
+			
+			
+			
+			}
+			
+			function hidenAllTips (){
+				for (i in tipsArray) {
+					tipsArray[i].visible = false
+				}
+			}
+			function findMesh(name){
+				let obj = scene.getObjectByName(name);
+				
+				if(obj){
+					return obj;
+				}else{
+					return null;
+				}
+				
+			}
+			function createGUI( model, animations ) {
+			
+				
+			
+				mixer = new THREE.AnimationMixer( model );
+			
+				actions = {};
+			
+				for ( var i = 0; i < animations.length; i ++ ) {
+			
+					var clip = animations[ i ];
+					var action = mixer.clipAction( clip );
+					actions[ clip.name ] = action;
+					action.clampWhenFinished = true;
+					action.loop = THREE.LoopOnce;
+					
+					activeAction = action
+			
+					
+					console.log(action)
+					
+			
+			
+				}
+				
+				
+			
+			}
+			function tweenAn(a){
+					let animates = new TWEEN.Tween( a ).to( {
+							time: 0 }, 600 )
+						.easing( TWEEN.Easing.Linear.None).start().onComplete(function(){
+			
+							animates = null
+						})
+			}
+		
+			
+			function onWindowResize() {
+			
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+			
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			
+			}
+			
+			//
+			
+			function animate() {
+			
+				var dt = clock.getDelta();
+			
+				if ( mixer ) mixer.update( dt );
+			
+				requestAnimationFrame( animate );
+			
+				renderer.render( scene, camera );
+				
+				dlight.position.copy(camera.position)
+				
+				controls.update()
+			
+			}
+			
+			rayBreathing();
+			function rayBreathing() {
+				document.addEventListener('click', ray);
+			
+				function ray() {
+					//					var Sx = event.touches[ 0 ].pageX; //鼠标单击位置横坐标//touchstart
+					//					var Sy = event.touches[ 0 ].pageY; //鼠标单击位置纵坐标
+					var Sx = event.clientX; //鼠标单击位置横坐标
+					var Sy = event.clientY; //鼠标单击位置纵坐标
+					//屏幕坐标转标准设备坐标
+					var x = (Sx / window.innerWidth) * 2 - 1; //标准设备横坐标
+					var y = -(Sy / window.innerHeight) * 2 + 1; //标准设备纵坐标
+					var standardVector = new THREE.Vector3(x, y, 0.5); //标准设备坐标
+					//标准设备坐标转世界坐标
+					var worldVector = standardVector.unproject(camera);
+					//射线投射方向单位向量(worldVector坐标减相机位置坐标)
+					var ray = worldVector.sub(camera.position).normalize();
+					//创建射线投射器对象
+					var raycaster = new THREE.Raycaster(camera.position, ray);
+					//返回射线选中的对象
+					var intersects = raycaster.intersectObjects(Bplace, true); //Bplace
+					var names = ['a', 'b', 'c','d','e','f','g']
+					hidenAllTips();
+					if(intersects.length > 0) {
+							let obj = intersects[0].object
+							if(obj.name.indexOf('sprite')!=-1){
+								smqRay.anRay(obj.anType);	
+							} 
+					}
+				}
+			}
+			
+			let smqRay = {
+				//宽3 高 2
+				anRay:function(type){
+					let actionDict = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6}
+					let index =  actionDict[type]
+					tipsArray[index].visible = true;
+				}
+			}
+		</script>
+	</body>
+</html>
